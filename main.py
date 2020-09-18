@@ -1,17 +1,26 @@
 from selenium import webdriver
 from config import username, password
 import os
+import platform
 import random
 
-driver = webdriver.Chrome(executable_path="Chromedriver.exe")
+"""
+WebDriver下载: http://npm.taobao.org/mirrors/chromedriver/
+使用方法请参见README.md
+"""
+
+driver_folder = os.path.split(os.path.realpath(__file__))[0]
+system_type = platform.system()
+
+if system_type == 'Windows':
+    driver = webdriver.Chrome(executable_path=os.path.join(driver_folder, "Chromedriver.exe"))
+else:
+    driver = webdriver.Chrome(executable_path=os.path.join(driver_folder, "Chromedriver"))
+
 login_url = 'http://ehall.seu.edu.cn/qljfwapp2/sys/lwReportEpidemicSeu/*default/index.do#/dailyReport'
 
 location = '江苏省, 南京市, 玄武区'
 temp_range = (35.5, 36.5)
-
-"""
-使用方法请参见README.md
-"""
 
 
 def login():
@@ -65,13 +74,11 @@ if __name__ == '__main__':
         driver.implicitly_wait(5)
         # 点击填报按钮
         press_add_btn()
-        # 输入数据
-        input_data()
         # 暂停
         os.system('pause')
 
-    # except Exception as e:
-        # print(e)
+    except Exception as e:
+        print(e)
 
     finally:
         # driver.quit()  # 退出整个浏览器
