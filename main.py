@@ -54,7 +54,23 @@ def select_default_item_by_keyword(drv, keyword):  # 在入校申请时选择默
             item.click()
 
     wait_element_by_class_name(drv, 'mint-picker__confirm', 5)  # 等待弹出动画
+    time.sleep(1)
     find_element_by_class_keyword(drv, 'mint-picker__confirm', '确定').click()  # 点击确定
+    time.sleep(1)
+
+
+def select_default_item_in_areas(drv, keyword):  # 在入校申请时选择通行区域
+    items = drv.find_elements_by_class_name('emapm-item')  # 找到所有项目
+    for item in items:
+        if item.text.find(keyword) >= 0:  # 找到项目标题
+            drv.execute_script("arguments[0].scrollIntoView();", item)  # 滚动页面直元素可见
+            item.click()
+
+    wait_element_by_class_name(drv, 'mint-checkbox-new-row', 5)  # 等待弹出动画
+    time.sleep(1)
+    drv.find_element_by_class_name('mint-checkbox-new-row').click()  # 点击复选框
+    time.sleep(1)
+    find_element_by_class_keyword(drv, 'mint-selected-footer-confirm', '确定').click()  # 点击确定按钮
     time.sleep(1)
 
 
@@ -83,6 +99,7 @@ def daily_report(drv, cfg):
 
     # 输入体温
     temp_input = find_element_by_class_placeholder_keyword(drv, 'mint-field-core', '请输入当天晨检体温')
+    drv.execute_script("arguments[0].scrollIntoView();", temp_input)  # 滚动页面直元素可见
     temp_input.click()  # 点击输入框
     temp = random.randint(int(cfg.temp_range[0]*10), int(cfg.temp_range[1]*10))  # 产生随机体温
     temp_input.send_keys(str(temp/10))  # 输入体温
@@ -106,6 +123,8 @@ def enter_campus_apply(drv, cfg):
     select_default_item_by_keyword(drv, '是否已在南京居家隔离')
     select_default_item_by_keyword(drv, '目前身体是否健康')
 
+    select_default_item_in_areas(drv, '通行区域')
+
 
 if __name__ == '__main__':
     try:
@@ -116,6 +135,7 @@ if __name__ == '__main__':
         # 每日填报
         # daily_report(driver, config)
         # 打开入校申请网站
+        # time.sleep(5)
         driver.get(enter_campus_apply_url)
         login(driver, config)
         # 填写入校申请
