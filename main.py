@@ -6,6 +6,7 @@ import random
 
 """
 WebDriver下载: http://npm.taobao.org/mirrors/chromedriver/
+下载后请与本py文件放置于同一目录中, Windows平台命名为Chromedriver.exe, *nix平台命名为chromedriver
 使用方法请参见README.md
 """
 
@@ -18,8 +19,6 @@ else:
     driver = webdriver.Chrome(executable_path=os.path.join(driver_folder, "Chromedriver"))
 
 login_url = 'http://ehall.seu.edu.cn/qljfwapp2/sys/lwReportEpidemicSeu/*default/index.do#/dailyReport'
-
-location = '江苏省, 南京市, 玄武区'
 temp_range = (35.5, 36.5)
 
 
@@ -50,7 +49,7 @@ def press_add_btn():
 
 
 def input_data():
-    """输入体温及定位"""
+    """输入体温"""
     inputs = driver.find_elements_by_class_name('mint-field-core')
     for temp_input in inputs:
         if temp_input.get_attribute("placeholder").find("请输入当天晨检体温") >= 0:
@@ -58,12 +57,10 @@ def input_data():
             temp = random.randint(int(temp_range[0]*10), int(temp_range[1]*10))  # 产生随机体温
             temp_input.send_keys(str(temp/10))  # 输入体温
 
-    cells = driver.find_elements_by_class_name('emapm-item')  # 找到所有列表项
-    for location_cell in cells:
-        cell_title = location_cell.find_element_by_class_name('mint-cell-title')
-        if cell_title.get_attribute('textContent') == '当前位置':  # 找到当前位置列表项
-            location_input = location_cell.find_element_by_class_name('mint-cell-value')  # 找到输入框
-            location_input.set_attribute('textContent', location)  # 强制设置位置
+
+def press_submit_btn():
+    """点击提交按钮"""
+    pass
 
 
 if __name__ == '__main__':
@@ -76,11 +73,13 @@ if __name__ == '__main__':
         press_add_btn()
         # 输入数据
         input_data()
-        # 暂停
-        os.system('pause')
+        # 点击提交按钮
+        press_submit_btn()
+
+        print('提报成功!')
 
     except Exception as e:
-        print(e)
+        print(e, ', 程序结束运行')
 
     finally:
         # driver.quit()  # 退出整个浏览器
