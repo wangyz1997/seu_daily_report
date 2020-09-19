@@ -60,7 +60,19 @@ def input_data():
 
 def press_submit_btn():
     """点击提交按钮"""
-    pass
+    buttons = driver.find_elements_by_class_name('mint-button--large')  # 提交按钮
+    for submit_btn in buttons:
+        if submit_btn.get_attribute('textContent').find('确认并提交') >= 0:  # 找到按钮文字是"提交"的按钮
+            submit_btn.click()  # 点击提交按钮
+            break
+
+    driver.implicitly_wait(1)
+
+    buttons = driver.find_elements_by_class_name('mint-msgbox-confirm')  # 提交按钮
+    for confirm_btn in buttons:
+        if confirm_btn.get_attribute('textContent').find('确定') >= 0:  # 找到按钮文字是"提交"的按钮
+            confirm_btn.click()  # 点击确认按钮
+            break
 
 
 if __name__ == '__main__':
@@ -78,8 +90,8 @@ if __name__ == '__main__':
 
         print('提报成功!')
 
-    except Exception as e:
-        print(e, ', 程序结束运行')
+    # except Exception as e:
+        # print(e, ', 程序结束运行')
 
     finally:
         # driver.quit()  # 退出整个浏览器
