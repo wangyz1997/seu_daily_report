@@ -53,7 +53,7 @@ def select_default_item_by_keyword(drv, keyword):  # 在入校申请时选择默
             drv.execute_script("arguments[0].scrollIntoView();", item)  # 滚动页面直元素可见
             item.click()
 
-    time.sleep(1)
+    wait_element_by_class_name(drv, 'mint-picker__confirm', 5)  # 等待弹出动画
     find_element_by_class_keyword(drv, 'mint-picker__confirm', '确定').click()  # 点击确定
     time.sleep(1)
 
@@ -89,6 +89,7 @@ def daily_report(drv, cfg):
 
     # 点击提交按钮并确认
     find_element_by_class_keyword(drv, 'mint-button--large', '确认并提交').click()  # 点击提交按钮
+    wait_element_by_class_name(drv, 'mint-msgbox-confirm', 5)  # 等待弹出动画
     find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
 
     print('每日疫情上报成功!')
