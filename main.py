@@ -19,8 +19,8 @@ if system_type == 'Windows':
 else:
     driver = webdriver.Chrome(executable_path=os.path.join(driver_folder, "Chromedriver"))
 
-login_url = 'http://ehall.seu.edu.cn/qljfwapp2/sys/lwReportEpidemicSeu/*default/index.do#/dailyReport'
-
+daily_report_url = 'http://ehall.seu.edu.cn/qljfwapp2/sys/lwReportEpidemicSeu/*default/index.do#/dailyReport'
+campus_apply_url = 'http://ehall.seu.edu.cn/qljfwapp3/sys/lwWiseduElectronicPass/*default/index.do'
 
 def find_element_by_class_keyword(drv, class_name, keyword):
     elements = WebDriverWait(drv, 10).until(
@@ -34,7 +34,6 @@ def find_element_by_class_keyword(drv, class_name, keyword):
 
 def login(drv, cfg):
     """登录"""
-    drv.get(login_url)  # 打开登录界面
     username_input = drv.find_element_by_id('username')
     password_input = drv.find_element_by_id('password')
     login_button = drv.find_element_by_class_name('auth_login_btn')  # 登录按钮
@@ -68,11 +67,17 @@ def daily_report(drv, cfg):
 
 if __name__ == '__main__':
     try:
+        # 打开疫情填报网站
+        driver.get(daily_report_url)
         # 登录
         login(driver, config)
         # 每日填报
         daily_report(driver, config)
         print('每日疫情上报成功!')
+        # 打开入校申请网站
+        driver.get(campus_apply_url)
+
+
 
     finally:
         driver.quit()  # 退出整个浏览器
