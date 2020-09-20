@@ -81,7 +81,20 @@ def picker_click(drv, column, cnt):
     pickers[cnt].click()  # 选中元素
 
 
-def time_date_pick(drv):  # 选择通行时间
+"""
+到教学楼上课 0
+实验室做实验 1
+到办公室科研 2
+到图书馆学习借书 3
+到职能部门、院系办手续 4
+开会 5
+往返无线谷实验室 6
+其他 7
+"""
+going_place = '中山院111'
+
+
+def time_date_reason_pick(drv):  # 选择通行时间及申请理由
     items = drv.find_elements_by_class_name('emapm-item')  # 找到所有项目
     date = datetime.datetime.now() + datetime.timedelta(days=1)
     for item in items:
@@ -89,6 +102,7 @@ def time_date_pick(drv):  # 选择通行时间
             drv.execute_script("arguments[0].scrollIntoView();", item)  # 滚动页面直元素可见
             item.click()  # 点击项目
             columns = item.find_elements_by_class_name('mint-picker-column')  # 找到项目内所有滚轮
+            time.sleep(1)
             picker_click(drv, columns[0], date.date().year-1920)  # 年 从1920年开始
             picker_click(drv, columns[1], date.date().month - 1)  # 月
             picker_click(drv, columns[2], date.date().day - 1)  # 日
@@ -102,6 +116,7 @@ def time_date_pick(drv):  # 选择通行时间
             drv.execute_script("arguments[0].scrollIntoView();", item)  # 滚动页面直元素可见
             item.click()  # 点击项目
             columns = item.find_elements_by_class_name('mint-picker-column')  # 找到项目内所有滚轮
+            time.sleep(1)
             picker_click(drv, columns[0], date.date().year - 1920)  # 年 从1920年开始
             picker_click(drv, columns[1], date.date().month - 1)  # 月
             picker_click(drv, columns[2], date.date().day - 1)  # 日
@@ -111,6 +126,15 @@ def time_date_pick(drv):  # 选择通行时间
             find_element_by_class_keyword(drv, 'mint-picker__confirm', '确定').click()  # 点击确定按钮
             time.sleep(1)
 
+        if item.text.find('申请理由') >= 0:  # 找到项目标题
+            drv.execute_script("arguments[0].scrollIntoView();", item)  # 滚动页面直元素可见
+            item.click()  # 点击项目
+            column = item.find_element_by_class_name('mint-picker-column')  # 找到项目内所有滚轮
+            time.sleep(1)
+            picker_click(drv, column, 1)  # 到实验室做实验
+            time.sleep(1)
+            find_element_by_class_keyword(drv, 'mint-picker__confirm', '确定').click()  # 点击确定按钮
+            time.sleep(1)
 
 
 def login(drv, cfg):
@@ -164,7 +188,12 @@ def enter_campus_apply(drv, cfg):
 
     select_default_item_in_areas(drv, '通行区域')
 
-    time_date_pick(drv)
+    time_date_reason_pick(drv)
+
+    temp_input = find_element_by_class_placeholder_keyword(drv, 'mint-field-core', '请输入所到楼宇')
+    drv.execute_script("arguments[0].scrollIntoView();", temp_input)  # 滚动页面直元素可见
+    temp_input.click()  # 点击输入框
+    temp_input.send_keys(going_place)  # 输入体温
 
 
 if __name__ == '__main__':
