@@ -1,11 +1,14 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
 import config
 import os
 import platform
 import random
 import time
 import datetime
+import server_chan
+import traceback
 
 """
 WebDriver下载: http://npm.taobao.org/mirrors/chromedriver/
@@ -16,20 +19,24 @@ WebDriver下载: http://npm.taobao.org/mirrors/chromedriver/
 driver_folder = os.path.split(os.path.realpath(__file__))[0]
 system_type = platform.system()
 
-if system_type == 'Windows':
+if system_type == 'Windows':  # 根据系统类型找到driver路径
     driver = webdriver.Chrome(executable_path=os.path.join(driver_folder, "Chromedriver.exe"))
 else:
     driver = webdriver.Chrome(executable_path=os.path.join(driver_folder, "chromedriver"))
+
+date_of_tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)  # 次日日期
 
 daily_report_url = 'http://ehall.seu.edu.cn/qljfwapp2/sys/lwReportEpidemicSeu/*default/index.do#/dailyReport'
 enter_campus_apply_url = 'http://ehall.seu.edu.cn/qljfwapp3/sys/lwWiseduElectronicPass/*default/index.do'
 
 
-def wait_element_by_class_name(drv, class_name, timeout):  # 等待某个class出现
+def wait_element_by_class_name(drv, class_name, timeout):
+    """等待某个class出现"""
     WebDriverWait(drv, timeout).until(lambda d: d.find_element_by_class_name(class_name))
 
 
-def find_element_by_class_placeholder_keyword(drv, class_name, keyword):  # 用于找对话框/普通按钮
+def find_element_by_class_placeholder_keyword(drv, class_name, keyword):
+    """用于找具有占位符的对话框"""
     elements = drv.find_elements_by_class_name(class_name)
     for element in elements:
         if element.get_attribute('placeholder').find(keyword) >= 0:
@@ -38,7 +45,8 @@ def find_element_by_class_placeholder_keyword(drv, class_name, keyword):  # 用�
     return None
 
 
-def find_element_by_class_keyword(drv, class_name, keyword):  # 用于找对话框/普通按钮
+def find_element_by_class_keyword(drv, class_name, keyword):
+    """寻找对话框/普通按钮"""
     elements = drv.find_elements_by_class_name(class_name)
     for element in elements:
         if element.text.find(keyword) >= 0:
@@ -47,7 +55,8 @@ def find_element_by_class_keyword(drv, class_name, keyword):  # 用于找对话�
     return None
 
 
-def select_default_item_by_keyword(drv, keyword):  # 在入校申请时选择默认项
+def select_default_item_by_keyword(drv, keyword):
+    """在入校申请时选择默认项"""
     items = drv.find_elements_by_class_name('emapm-item')  # 找到所有项目
     for item in items:
         if item.text.find(keyword) >= 0:  # 找到项目标题
@@ -60,7 +69,8 @@ def select_default_item_by_keyword(drv, keyword):  # 在入校申请时选择默
     time.sleep(1)
 
 
-def select_default_item_in_areas(drv, keyword):  # 在入校申请时选择通行区域
+def select_default_item_in_areas(drv, keyword):
+    """在入校申请时选择通行区域"""
     items = drv.find_elements_by_class_name('emapm-item')  # 找到所有项目
     for item in items:
         if item.text.find(keyword) >= 0:  # 找到项目标题
@@ -76,36 +86,24 @@ def select_default_item_in_areas(drv, keyword):  # 在入校申请时选择通�
 
 
 def picker_click(drv, column, cnt):
+    """选择滚轮的中的项目"""
     pickers = column.find_elements_by_class_name('mt-picker-column-item')  # 所有滚动元素
     drv.execute_script("arguments[0].scrollIntoView();", pickers[cnt])  # 滚动页面直元素可见
     pickers[cnt].click()  # 选中元素
 
 
-"""
-到教学楼上课 0
-实验室做实验 1
-到办公室科研 2
-到图书馆学习借书 3
-到职能部门、院系办手续 4
-开会 5
-往返无线谷实验室 6
-其他 7
-"""
-going_place = '中山院111'
-
-
-def time_date_reason_pick(drv):  # 选择通行时间及申请理由
+def time_date_reason_pick(drv, cfg):
+    """选择通行时间及申请理由"""
     items = drv.find_elements_by_class_name('emapm-item')  # 找到所有项目
-    date = datetime.datetime.now() + datetime.timedelta(days=1)
     for item in items:
         if item.text.find('通行开始时间') >= 0:  # 找到项目标题
             drv.execute_script("arguments[0].scrollIntoView();", item)  # 滚动页面直元素可见
             item.click()  # 点击项目
             columns = item.find_elements_by_class_name('mint-picker-column')  # 找到项目内所有滚轮
             time.sleep(1)
-            picker_click(drv, columns[0], date.date().year-1920)  # 年 从1920年开始
-            picker_click(drv, columns[1], date.date().month - 1)  # 月
-            picker_click(drv, columns[2], date.date().day - 1)  # 日
+            picker_click(drv, columns[0], date_of_tomorrow.date().year - 1920)  # 年 从1920年开始
+            picker_click(drv, columns[1], date_of_tomorrow.date().month - 1)  # 月
+            picker_click(drv, columns[2], date_of_tomorrow.date().day - 1)  # 日
             picker_click(drv, columns[3], 7)  # 时
             picker_click(drv, columns[4], 31)  # 分 入校时间为7时31分
             time.sleep(1)
@@ -117,9 +115,9 @@ def time_date_reason_pick(drv):  # 选择通行时间及申请理由
             item.click()  # 点击项目
             columns = item.find_elements_by_class_name('mint-picker-column')  # 找到项目内所有滚轮
             time.sleep(1)
-            picker_click(drv, columns[0], date.date().year - 1920)  # 年 从1920年开始
-            picker_click(drv, columns[1], date.date().month - 1)  # 月
-            picker_click(drv, columns[2], date.date().day - 1)  # 日
+            picker_click(drv, columns[0], date_of_tomorrow.date().year - 1920)  # 年 从1920年开始
+            picker_click(drv, columns[1], date_of_tomorrow.date().month - 1)  # 月
+            picker_click(drv, columns[2], date_of_tomorrow.date().day - 1)  # 日
             picker_click(drv, columns[3], 21)  # 时
             picker_click(drv, columns[4], 59)  # 分 出校时间为21时59分
             time.sleep(1)
@@ -131,7 +129,7 @@ def time_date_reason_pick(drv):  # 选择通行时间及申请理由
             item.click()  # 点击项目
             column = item.find_element_by_class_name('mint-picker-column')  # 找到项目内所有滚轮
             time.sleep(1)
-            picker_click(drv, column, 1)  # 到实验室做实验
+            picker_click(drv, column, cfg.reasons[date_of_tomorrow.date().weekday()])  # 根据星期自动填写目的
             time.sleep(1)
             find_element_by_class_keyword(drv, 'mint-picker__confirm', '确定').click()  # 点击确定按钮
             time.sleep(1)
@@ -154,7 +152,7 @@ def daily_report(drv, cfg):
     wait_element_by_class_name(drv, 'mint-layout-lr', 30)  # 等待界面加载 超时30s
     add_btn = drv.find_element_by_xpath('//*[@id="app"]/div/div[1]/button[1]')  # 找到新增按钮
     if add_btn.text == '退出':
-        print('今日已填报')
+        server_chan.server_chan_send(cfg.server_chan_key, '今日疫情上报已填报', '')
         return
     else:
         add_btn.click()  # 点击新增填报按钮
@@ -164,8 +162,8 @@ def daily_report(drv, cfg):
     temp_input = find_element_by_class_placeholder_keyword(drv, 'mint-field-core', '请输入当天晨检体温')
     drv.execute_script("arguments[0].scrollIntoView();", temp_input)  # 滚动页面直元素可见
     temp_input.click()  # 点击输入框
-    temp = random.randint(int(cfg.temp_range[0]*10), int(cfg.temp_range[1]*10))  # 产生随机体温
-    temp_input.send_keys(str(temp/10))  # 输入体温
+    temp = random.randint(int(cfg.temp_range[0] * 10), int(cfg.temp_range[1] * 10))  # 产生随机体温
+    temp_input.send_keys(str(temp / 10))  # 输入体温
 
     # 点击提交按钮并确认
     find_element_by_class_keyword(drv, 'mint-button--large', '确认并提交').click()  # 点击提交按钮
@@ -173,12 +171,19 @@ def daily_report(drv, cfg):
     time.sleep(1)
     find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
 
-    print('每日疫情上报成功!')
+    server_chan.server_chan_send(cfg.server_chan_key, '每日疫情上报成功!', '')
 
 
 def enter_campus_apply(drv, cfg):
+    """进行入校申请"""
     wait_element_by_class_name(drv, 'res-item-ele', 30)  # 等待界面加载 超时30s
     drv.find_element_by_xpath('//*[@id="app"]/div/div[3]').click()  # 找到新增按钮
+
+    time.sleep(2)  # 等待窗口动画弹出
+    popup = find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定')  # 查询是否弹出了对话框
+    if type(popup) is not None:
+        server_chan.server_chan_send(cfg.server_chan_key, '今日入校申请已填报或者不在填报时间', '')
+        return
 
     wait_element_by_class_name(drv, 'emapm-item', 30)  # 等待界面加载
     select_default_item_by_keyword(drv, '身份证件类型')
@@ -189,35 +194,41 @@ def enter_campus_apply(drv, cfg):
 
     select_default_item_in_areas(drv, '通行区域')
 
-    time_date_reason_pick(drv)
+    time_date_reason_pick(drv, cfg)  # 填入入校时间/出校时间/入校理由
 
     temp_input = find_element_by_class_placeholder_keyword(drv, 'mint-field-core', '请输入所到楼宇')
     drv.execute_script("arguments[0].scrollIntoView();", temp_input)  # 滚动页面直元素可见
     temp_input.click()  # 点击输入框
-    temp_input.send_keys(going_place)  # 输入体温
+    temp_input.send_keys(cfg.reasons[date_of_tomorrow.weekday()])  # 输入入校地址
 
     find_element_by_class_keyword(drv, 'tg-button', '提交').click()  # 点击提交按钮
     wait_element_by_class_name(drv, 'mint-msgbox-confirm', 5)  # 等待弹出动画
     time.sleep(1)
     find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
 
-    print('每日入校申请成功!')
+    server_chan.server_chan_send(cfg.server_chan_key, '每日入校申请成功!', '')
 
 
-if __name__ == '__main__':
+def run(drv, cfg):
     try:
         # 打开疫情填报网站
         driver.get(daily_report_url)
         # 登录
-        login(driver, config)
+        login(drv, cfg)
         # 每日填报
-        daily_report(driver, config)
+        daily_report(drv, cfg)
         # 打开入校申请网站
         time.sleep(5)
-        driver.get(enter_campus_apply_url)
+        drv.get(enter_campus_apply_url)
         # 填写入校申请
-        enter_campus_apply(driver, config)
-
+        enter_campus_apply(drv, cfg)
+    except Exception:
+        exception = traceback.format_exc()
+        server_chan.server_chan_send(cfg.server_chan_key, '出错啦！', exception)
     finally:
-        input('按任意键继续...')
-        driver.quit()  # 退出整个浏览器
+        time.sleep(10)
+        drv.quit()  # 退出整个浏览器
+
+
+if __name__ == '__main__':
+    run(driver, config)
