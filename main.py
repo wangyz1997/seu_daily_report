@@ -121,7 +121,7 @@ def time_date_reason_pick(drv):  # 选择通行时间及申请理由
             picker_click(drv, columns[1], date.date().month - 1)  # 月
             picker_click(drv, columns[2], date.date().day - 1)  # 日
             picker_click(drv, columns[3], 21)  # 时
-            picker_click(drv, columns[4], 59)  # 分 入校时间为7时31分
+            picker_click(drv, columns[4], 59)  # 分 出校时间为21时59分
             time.sleep(1)
             find_element_by_class_keyword(drv, 'mint-picker__confirm', '确定').click()  # 点击确定按钮
             time.sleep(1)
@@ -170,6 +170,7 @@ def daily_report(drv, cfg):
     # 点击提交按钮并确认
     find_element_by_class_keyword(drv, 'mint-button--large', '确认并提交').click()  # 点击提交按钮
     wait_element_by_class_name(drv, 'mint-msgbox-confirm', 5)  # 等待弹出动画
+    time.sleep(1)
     find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
 
     print('每日疫情上报成功!')
@@ -195,19 +196,25 @@ def enter_campus_apply(drv, cfg):
     temp_input.click()  # 点击输入框
     temp_input.send_keys(going_place)  # 输入体温
 
+    find_element_by_class_keyword(drv, 'tg-button', '提交').click()  # 点击提交按钮
+    wait_element_by_class_name(drv, 'mint-msgbox-confirm', 5)  # 等待弹出动画
+    time.sleep(1)
+    find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
+
+    print('每日入校申请成功!')
+
 
 if __name__ == '__main__':
     try:
         # 打开疫情填报网站
-        # driver.get(daily_report_url)
+        driver.get(daily_report_url)
         # 登录
-        # login(driver, config)
-        # 每日填报
-        # daily_report(driver, config)
-        # 打开入校申请网站
-        # time.sleep(5)
-        driver.get(enter_campus_apply_url)
         login(driver, config)
+        # 每日填报
+        daily_report(driver, config)
+        # 打开入校申请网站
+        time.sleep(5)
+        driver.get(enter_campus_apply_url)
         # 填写入校申请
         enter_campus_apply(driver, config)
 
