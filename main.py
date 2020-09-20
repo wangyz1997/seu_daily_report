@@ -166,7 +166,7 @@ def enter_campus_apply(drv, cfg):
 
     time.sleep(2)  # 等待窗口动画弹出
     popup = find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定')  # 查询是否弹出了对话框
-    if type(popup) is not None:
+    if popup is not None:
         server_chan.server_chan_send(cfg.server_chan_key, '今日入校申请已填报或者不在填报时间', '')
         return
 
@@ -184,7 +184,7 @@ def enter_campus_apply(drv, cfg):
     temp_input = find_element_by_class_placeholder_keyword(drv, 'mint-field-core', '请输入所到楼宇')
     drv.execute_script("arguments[0].scrollIntoView();", temp_input)  # 滚动页面直元素可见
     temp_input.click()  # 点击输入框
-    temp_input.send_keys(cfg.reasons[date_of_tomorrow.weekday()])  # 输入入校地址
+    temp_input.send_keys(cfg.places[date_of_tomorrow.weekday()])  # 输入入校地址
 
     find_element_by_class_keyword(drv, 'tg-button', '提交').click()  # 点击提交按钮
     wait_element_by_class_name(drv, 'mint-msgbox-confirm', 5)  # 等待弹出动画
