@@ -5,6 +5,7 @@ import os
 import platform
 import random
 import time
+import datetime
 
 """
 WebDriver下载: http://npm.taobao.org/mirrors/chromedriver/
@@ -74,6 +75,44 @@ def select_default_item_in_areas(drv, keyword):  # 在入校申请时选择通�
     time.sleep(1)
 
 
+def picker_click(drv, column, cnt):
+    pickers = column.find_elements_by_class_name('mt-picker-column-item')  # 所有滚动元素
+    drv.execute_script("arguments[0].scrollIntoView();", pickers[cnt])  # 滚动页面直元素可见
+    pickers[cnt].click()  # 选中元素
+
+
+def time_date_pick(drv):  # 选择通行时间
+    items = drv.find_elements_by_class_name('emapm-item')  # 找到所有项目
+    date = datetime.datetime.now() + datetime.timedelta(days=1)
+    for item in items:
+        if item.text.find('通行开始时间') >= 0:  # 找到项目标题
+            drv.execute_script("arguments[0].scrollIntoView();", item)  # 滚动页面直元素可见
+            item.click()  # 点击项目
+            columns = item.find_elements_by_class_name('mint-picker-column')  # 找到项目内所有滚轮
+            picker_click(drv, columns[0], date.date().year-1920)  # 年 从1920年开始
+            picker_click(drv, columns[1], date.date().month - 1)  # 月
+            picker_click(drv, columns[2], date.date().day - 1)  # 日
+            picker_click(drv, columns[3], 7)  # 时
+            picker_click(drv, columns[4], 31)  # 分 入校时间为7时31分
+            time.sleep(1)
+            find_element_by_class_keyword(drv, 'mint-picker__confirm', '确定').click()  # 点击确定按钮
+            time.sleep(1)
+
+        if item.text.find('通行结束时间') >= 0:  # 找到项目标题
+            drv.execute_script("arguments[0].scrollIntoView();", item)  # 滚动页面直元素可见
+            item.click()  # 点击项目
+            columns = item.find_elements_by_class_name('mint-picker-column')  # 找到项目内所有滚轮
+            picker_click(drv, columns[0], date.date().year - 1920)  # 年 从1920年开始
+            picker_click(drv, columns[1], date.date().month - 1)  # 月
+            picker_click(drv, columns[2], date.date().day - 1)  # 日
+            picker_click(drv, columns[3], 21)  # 时
+            picker_click(drv, columns[4], 59)  # 分 入校时间为7时31分
+            time.sleep(1)
+            find_element_by_class_keyword(drv, 'mint-picker__confirm', '确定').click()  # 点击确定按钮
+            time.sleep(1)
+
+
+
 def login(drv, cfg):
     """登录"""
     username_input = drv.find_element_by_id('username')
@@ -125,6 +164,8 @@ def enter_campus_apply(drv, cfg):
 
     select_default_item_in_areas(drv, '通行区域')
 
+    time_date_pick(drv)
+
 
 if __name__ == '__main__':
     try:
@@ -142,5 +183,5 @@ if __name__ == '__main__':
         enter_campus_apply(driver, config)
 
     finally:
-        time.sleep(5)
+        input('按任意键继续...')
         driver.quit()  # 退出整个浏览器
