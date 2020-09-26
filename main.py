@@ -6,13 +6,25 @@ import platform
 import random
 import time
 import datetime
-import server_chan
 import traceback
+import requests
 
+
+date_of_today = datetime.datetime.now()  # 当日日期
 date_of_tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)  # 次日日期
 # 疫情每日上报和入校申请URL
 daily_report_url = 'http://ehall.seu.edu.cn/qljfwapp2/sys/lwReportEpidemicSeu/*default/index.do#/dailyReport'
 enter_campus_apply_url = 'http://ehall.seu.edu.cn/qljfwapp3/sys/lwWiseduElectronicPass/*default/index.do'
+server_chan_url = 'http://sc.ftqq.com/{0}.send?text={1}&desp={2}/'
+
+
+def server_chan_send(key, content, description):
+    print(content, '\r\n', description)
+    if len(key) <= 0:
+        return None
+
+    get_url = server_chan_url.format(key, content, description)
+    return requests.get(get_url)
 
 
 def wait_element_by_class_name(drv, class_name, timeout):
@@ -120,6 +132,19 @@ def time_date_reason_pick(drv, cfg):
             time.sleep(1)
 
 
+def check_todays_report(drv):
+    """检查当日是否已进行过入校申请"""
+    items = drv.find_elements_by_class_name('res-list')  # 找到所有已填报项目
+    latest = find_element_by_class_keyword(items[0], 'res-item-ele', '申请时间').text  # 第一个项目即为最近一次的填报
+    latest = latest[latest.find(' ') + 1: latest.rfind(' ')]  # 只保留日期
+    latest_date = datetime.datetime.strptime(latest, '%Y-%m-%d').date()  # 转换
+
+    if latest_date == date_of_today.date():  # 今日已经填报过了
+        return True
+
+    return False
+
+
 def login(drv, cfg):
     """登录"""
     username_input = drv.find_element_by_id('username')  # 账户输入框
@@ -137,7 +162,7 @@ def daily_report(drv, cfg):
     wait_element_by_class_name(drv, 'mint-layout-lr', 30)  # 等待界面加载 超时30s
     add_btn = drv.find_element_by_xpath('//*[@id="app"]/div/div[1]/button[1]')  # 找到新增按钮
     if add_btn.text == '退出':
-        server_chan.server_chan_send(cfg.server_chan_key, '今日疫情上报已填报', '')
+        server_chan_send(cfg.server_chan_key, '今日疫情上报已填报', '')
         return
     else:
         add_btn.click()  # 点击新增填报按钮
@@ -156,18 +181,23 @@ def daily_report(drv, cfg):
     time.sleep(1)
     find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
 
-    server_chan.server_chan_send(cfg.server_chan_key, '每日疫情上报成功!', '')
+    server_chan_send(cfg.server_chan_key, '每日疫情上报成功!', '')
 
 
 def enter_campus_apply(drv, cfg):
     """进行入校申请"""
     wait_element_by_class_name(drv, 'res-item-ele', 30)  # 等待界面加载 超时30s
+
+    if check_todays_report(drv):  # 当日已进行入校申请
+        server_chan_send(cfg.server_chan_key, '当日已经进行过入校申请！', '')
+        return
+
     drv.find_element_by_xpath('//*[@id="app"]/div/div[3]').click()  # 找到新增按钮
 
     time.sleep(2)  # 等待窗口动画弹出
     popup = find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定')  # 查询是否弹出了对话框
-    if popup is not None:
-        server_chan.server_chan_send(cfg.server_chan_key, '今日入校申请已填报或者不在填报时间', '')
+    if popup is not None:  # 如果弹出了对话框
+        server_chan_send(cfg.server_chan_key, '当前不在入校申请填报时间!', '')
         return
 
     wait_element_by_class_name(drv, 'emapm-item', 30)  # 等待界面加载
@@ -191,7 +221,7 @@ def enter_campus_apply(drv, cfg):
     time.sleep(1)
     find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
 
-    server_chan.server_chan_send(cfg.server_chan_key, '每日入校申请成功!', '')
+    server_chan_send(cfg.server_chan_key, '每日入校申请成功!', '')
 
 
 def run(drv, cfg):
@@ -209,7 +239,7 @@ def run(drv, cfg):
         enter_campus_apply(drv, cfg)
     except Exception:
         exception = traceback.format_exc()
-        server_chan.server_chan_send(cfg.server_chan_key, '出错啦！', exception)
+        server_chan_send(cfg.server_chan_key, '出错啦！', exception)
     finally:
         time.sleep(10)
         drv.quit()  # 退出整个浏览器
