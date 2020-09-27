@@ -160,6 +160,7 @@ def daily_report(drv, cfg):
     """进行每日上报"""
     # 新增填报
     wait_element_by_class_name(drv, 'mint-loadmore-top', 30)  # 等待界面加载 超时30s
+    time.sleep(1)
     add_btn = drv.find_element_by_xpath('//*[@id="app"]/div/div[1]/button[1]')  # 找到新增按钮
     if add_btn.text == '退出':
         server_chan_send(cfg['server_chan_key'], '今日已经进行过疫情上报！', '')
