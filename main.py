@@ -162,7 +162,7 @@ def daily_report(drv, cfg):
     wait_element_by_class_name(drv, 'mint-loadmore-top', 30)  # 等待界面加载 超时30s
     add_btn = drv.find_element_by_xpath('//*[@id="app"]/div/div[1]/button[1]')  # 找到新增按钮
     if add_btn.text == '退出':
-        server_chan_send(cfg['server_chan_key'], '今日疫情上报已填报', '')
+        server_chan_send(cfg['server_chan_key'], '今日已经进行过疫情上报！', '')
         return
     else:
         add_btn.click()  # 点击新增填报按钮
@@ -182,15 +182,15 @@ def daily_report(drv, cfg):
     time.sleep(1)
     find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
 
-    server_chan_send(cfg['server_chan_key'], '每日疫情上报成功!', '')
+    server_chan_send(cfg['server_chan_key'], str(cfg['username'])+'每日疫情上报成功!', '')
 
 
 def enter_campus_apply(drv, cfg):
     """进行入校申请"""
     wait_element_by_class_name(drv, 'res-item-ele', 30)  # 等待界面加载 超时30s
 
-    if check_todays_report(drv):  # 当日已进行入校申请
-        server_chan_send(cfg['server_chan_key'], '当日已经进行过入校申请！', '')
+    if check_todays_report(drv):  # 今日已进行入校申请
+        server_chan_send(cfg['server_chan_key'], '今日已经进行过入校申请！', '')
         return
 
     drv.find_element_by_xpath('//*[@id="app"]/div/div[3]').click()  # 找到新增按钮
@@ -222,7 +222,7 @@ def enter_campus_apply(drv, cfg):
     time.sleep(1)
     find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
 
-    server_chan_send(cfg['server_chan_key'], '每日入校申请成功!', '')
+    server_chan_send(cfg['server_chan_key'], str(cfg['username'])+'每日入校申请成功!', '')
 
 
 def run(cfg):
@@ -241,7 +241,7 @@ def run(cfg):
         enter_campus_apply(driver, cfg)
     except Exception:
         exception = traceback.format_exc()
-        server_chan_send(cfg['server_chan_key'], '出错啦！', exception)
+        server_chan_send(cfg['server_chan_key'], '出错啦！请尝试手动重新填报。', exception)
     finally:
         time.sleep(3)
         driver.quit()  # 退出整个浏览器
@@ -252,4 +252,7 @@ if __name__ == '__main__':
     users = json.load(config_file)['users']
 
     for user in users:
+        print(user['username'], '正在填报...')
         run(user)
+        print(user['username'], '填报完成')
+        time.sleep(5)
