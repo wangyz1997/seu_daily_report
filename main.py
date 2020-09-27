@@ -159,7 +159,7 @@ def login(drv, cfg):
 def daily_report(drv, cfg):
     """进行每日上报"""
     # 新增填报
-    wait_element_by_class_name(drv, 'mint-layout-lr', 30)  # 等待界面加载 超时30s
+    wait_element_by_class_name(drv, 'mint-loadmore-top', 30)  # 等待界面加载 超时30s
     add_btn = drv.find_element_by_xpath('//*[@id="app"]/div/div[1]/button[1]')  # 找到新增按钮
     if add_btn.text == '退出':
         server_chan_send(cfg.server_chan_key, '今日疫情上报已填报', '')
@@ -174,6 +174,7 @@ def daily_report(drv, cfg):
     temp_input.click()  # 点击输入框
     temp = random.randint(int(cfg.temp_range[0] * 10), int(cfg.temp_range[1] * 10))  # 产生随机体温
     temp_input.send_keys(str(temp / 10))  # 输入体温
+    time.sleep(1)
 
     # 点击提交按钮并确认
     find_element_by_class_keyword(drv, 'mint-button--large', '确认并提交').click()  # 点击提交按钮
