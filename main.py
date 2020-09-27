@@ -1,8 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
-import config
 import os
-import platform
+import json
 import random
 import time
 import datetime
@@ -12,6 +11,7 @@ import requests
 
 date_of_today = datetime.datetime.now()  # 当日日期
 date_of_tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)  # 次日日期
+current_folder = os.path.split(os.path.realpath(__file__))[0]  # 当前py文件路径
 # 疫情每日上报和入校申请URL
 daily_report_url = 'http://ehall.seu.edu.cn/qljfwapp2/sys/lwReportEpidemicSeu/*default/index.do#/dailyReport'
 enter_campus_apply_url = 'http://ehall.seu.edu.cn/qljfwapp3/sys/lwWiseduElectronicPass/*default/index.do'
@@ -126,7 +126,7 @@ def time_date_reason_pick(drv, cfg):
             item.click()  # 点击项目
             column = item.find_element_by_class_name('mint-picker-column')  # 找到项目内所有滚轮
             time.sleep(1)
-            picker_click(drv, column, cfg.reasons[date_of_tomorrow.date().weekday()])  # 根据星期自动填写目的
+            picker_click(drv, column, cfg['reasons'][date_of_tomorrow.date().weekday()])  # 根据星期自动填写目的
             time.sleep(1)
             find_element_by_class_keyword(drv, 'mint-picker__confirm', '确定').click()  # 点击确定按钮
             time.sleep(1)
@@ -151,8 +151,8 @@ def login(drv, cfg):
     password_input = drv.find_element_by_id('password')  # 密码输入框
     login_button = find_element_by_class_keyword(drv, 'auth_login_btn', '登录')  # 登录按钮
 
-    username_input.send_keys(cfg.username)
-    password_input.send_keys(cfg.password)
+    username_input.send_keys(cfg['username'])
+    password_input.send_keys(cfg['password'])
     login_button.click()  # 登录账户
 
 
@@ -162,7 +162,7 @@ def daily_report(drv, cfg):
     wait_element_by_class_name(drv, 'mint-loadmore-top', 30)  # 等待界面加载 超时30s
     add_btn = drv.find_element_by_xpath('//*[@id="app"]/div/div[1]/button[1]')  # 找到新增按钮
     if add_btn.text == '退出':
-        server_chan_send(cfg.server_chan_key, '今日疫情上报已填报', '')
+        server_chan_send(cfg['server_chan_key'], '今日疫情上报已填报', '')
         return
     else:
         add_btn.click()  # 点击新增填报按钮
@@ -172,7 +172,7 @@ def daily_report(drv, cfg):
     temp_input = find_element_by_class_placeholder_keyword(drv, 'mint-field-core', '请输入当天晨检体温')
     drv.execute_script("arguments[0].scrollIntoView();", temp_input)  # 滚动页面直元素可见
     temp_input.click()  # 点击输入框
-    temp = random.randint(int(cfg.temp_range[0] * 10), int(cfg.temp_range[1] * 10))  # 产生随机体温
+    temp = random.randint(int(cfg['temp_range'][0] * 10), int(cfg['temp_range'][1] * 10))  # 产生随机体温
     temp_input.send_keys(str(temp / 10))  # 输入体温
     time.sleep(1)
 
@@ -182,7 +182,7 @@ def daily_report(drv, cfg):
     time.sleep(1)
     find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
 
-    server_chan_send(cfg.server_chan_key, '每日疫情上报成功!', '')
+    server_chan_send(cfg['server_chan_key'], '每日疫情上报成功!', '')
 
 
 def enter_campus_apply(drv, cfg):
@@ -190,7 +190,7 @@ def enter_campus_apply(drv, cfg):
     wait_element_by_class_name(drv, 'res-item-ele', 30)  # 等待界面加载 超时30s
 
     if check_todays_report(drv):  # 当日已进行入校申请
-        server_chan_send(cfg.server_chan_key, '当日已经进行过入校申请！', '')
+        server_chan_send(cfg['server_chan_key'], '当日已经进行过入校申请！', '')
         return
 
     drv.find_element_by_xpath('//*[@id="app"]/div/div[3]').click()  # 找到新增按钮
@@ -198,7 +198,7 @@ def enter_campus_apply(drv, cfg):
     time.sleep(2)  # 等待窗口动画弹出
     popup = find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定')  # 查询是否弹出了对话框
     if popup is not None:  # 如果弹出了对话框
-        server_chan_send(cfg.server_chan_key, '当前不在入校申请填报时间!', '')
+        server_chan_send(cfg['server_chan_key'], '当前不在入校申请填报时间!', '')
         return
 
     wait_element_by_class_name(drv, 'emapm-item', 30)  # 等待界面加载
@@ -215,44 +215,41 @@ def enter_campus_apply(drv, cfg):
     temp_input = find_element_by_class_placeholder_keyword(drv, 'mint-field-core', '请输入所到楼宇')
     drv.execute_script("arguments[0].scrollIntoView();", temp_input)  # 滚动页面直元素可见
     temp_input.click()  # 点击输入框
-    temp_input.send_keys(cfg.places[date_of_tomorrow.weekday()])  # 输入入校地址
+    temp_input.send_keys(cfg['places'][date_of_tomorrow.weekday()])  # 输入入校地址
 
     find_element_by_class_keyword(drv, 'tg-button', '提交').click()  # 点击提交按钮
     wait_element_by_class_name(drv, 'mint-msgbox-confirm', 5)  # 等待弹出动画
     time.sleep(1)
     find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
 
-    server_chan_send(cfg.server_chan_key, '每日入校申请成功!', '')
+    server_chan_send(cfg['server_chan_key'], '每日入校申请成功!', '')
 
 
-def run(drv, cfg):
+def run(cfg):
+    driver = webdriver.Chrome(executable_path=os.path.join(current_folder, "Chromedriver.exe"))
     try:
         # 打开疫情填报网站
         driver.get(daily_report_url)
         # 登录
-        login(drv, cfg)
+        login(driver, cfg)
         # 每日填报
-        daily_report(drv, cfg)
+        daily_report(driver, cfg)
         # 打开入校申请网站
         time.sleep(5)
-        drv.get(enter_campus_apply_url)
+        driver.get(enter_campus_apply_url)
         # 填写入校申请
-        enter_campus_apply(drv, cfg)
+        enter_campus_apply(driver, cfg)
     except Exception:
         exception = traceback.format_exc()
-        server_chan_send(cfg.server_chan_key, '出错啦！', exception)
+        server_chan_send(cfg['server_chan_key'], '出错啦！', exception)
     finally:
-        time.sleep(10)
-        drv.quit()  # 退出整个浏览器
+        time.sleep(3)
+        driver.quit()  # 退出整个浏览器
 
 
 if __name__ == '__main__':
-    driver_folder = os.path.split(os.path.realpath(__file__))[0]  # 当前py文件路径
-    system_type = platform.system()
+    config_file = open(os.path.join(current_folder, 'config.json'), encoding='UTF-8')
+    users = json.load(config_file)['users']
 
-    if system_type == 'Windows':  # 根据系统类型找到driver名称
-        driver = webdriver.Chrome(executable_path=os.path.join(driver_folder, "Chromedriver.exe"))
-    else:
-        driver = webdriver.Chrome(executable_path=os.path.join(driver_folder, "chromedriver"))
-
-    run(driver, config)
+    for user in users:
+        run(user)
