@@ -249,11 +249,11 @@ def run(cfg):
 
 
 if __name__ == '__main__':
-    config_file = open(os.path.join(current_folder, 'config.json'), encoding='UTF-8')
-    users = json.load(config_file)['users']
+    with open(os.path.join(current_folder, 'config.json'), encoding='UTF-8') as config_file:
+        users = json.load(config_file)['users']
 
-    for user in users:
-        print(user['username'], '正在填报...')
-        run(user)
-        print(user['username'], '填报完成')
-        time.sleep(5)
+        for user in users:
+            print(user['username'], '正在填报...')
+            run(user)
+            print(user['username'], '填报完成')
+            time.sleep(5)
