@@ -63,7 +63,19 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
 |          其他          |    7     |
 
 ## 5. 运行脚本
-运行`main.py`即可。您也可以将脚本与运行环境部署到云服务器上，并设置定时计划任务，实现每日自动签到。
+在您正式运行脚本之前，请确认您脚本目录下的文件和下面相同：
+
+```
+|-- seu_daily_report
+    |-- .gitignore
+    |-- chromedriver.exe
+    |-- config.json
+    |-- main.py
+    |-- README.md
+```
+
+之后，使用`python`运行`main.py`即可。
+您也可以将脚本与运行环境部署到云服务器上，并设置定时计划任务，实现每日自动签到。
 
 ## 6. 进阶
 若想要同时为多个用户执行本脚本，只需要将`config.json`中`users`字段的配置信息复制多份，每一份均填写一位用户的信息即可。
