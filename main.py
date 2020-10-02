@@ -15,7 +15,7 @@ current_folder = os.path.split(os.path.realpath(__file__))[0]  # 当前py文件�
 # 疫情每日上报和入校申请URL
 daily_report_url = 'http://ehall.seu.edu.cn/qljfwapp2/sys/lwReportEpidemicSeu/*default/index.do#/dailyReport'
 enter_campus_apply_url = 'http://ehall.seu.edu.cn/qljfwapp3/sys/lwWiseduElectronicPass/*default/index.do'
-server_chan_url = 'http://sc.ftqq.com/{0}.send?text={1}&desp={2}/'
+server_chan_url = 'http://sc.ftqq.com/{}.send/'
 
 
 def server_chan_send(key, content, description):
@@ -23,8 +23,11 @@ def server_chan_send(key, content, description):
     if len(key) <= 0:
         return None
 
-    get_url = server_chan_url.format(key, content, description)
-    return requests.get(get_url)
+    get_url = server_chan_url.format(key)
+    param = dict()
+    param['text'] = content
+    param['desp'] = description.replace('\n', '\n\n')  # 将格式改为MarkDown格式
+    return requests.get(get_url, param)  # 使用requests自带的编码库来避免url编码问题
 
 
 def wait_element_by_class_name(drv, class_name, timeout):
@@ -242,7 +245,7 @@ def run(cfg):
         enter_campus_apply(driver, cfg)
     except Exception:
         exception = traceback.format_exc()
-        server_chan_send(cfg['server_chan_key'], '出错啦！请尝试手动重新填报。', exception)
+        server_chan_send(cfg['server_chan_key'], '出错啦,请尝试手动重新填报', exception)
     finally:
         time.sleep(3)
         driver.quit()  # 退出整个浏览器
