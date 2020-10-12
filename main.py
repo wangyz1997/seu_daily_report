@@ -153,6 +153,8 @@ def login(drv, cfg):
     username_input = drv.find_element_by_id('username')  # 账户输入框
     password_input = drv.find_element_by_id('password')  # 密码输入框
     login_button = find_element_by_class_keyword(drv, 'auth_login_btn', '登录')  # 登录按钮
+    if login_button is None:
+        login_button = find_element_by_class_keyword(drv, 'auth_login_btn', 'Sign in')  # 登录按钮
 
     username_input.send_keys(cfg['username'])
     password_input.send_keys(cfg['password'])
