@@ -231,23 +231,24 @@ def enter_campus_apply(drv, cfg):
     server_chan_send(cfg['server_chan_key'], str(cfg['username'])+'每日入校申请成功!', '')
 
 
-def run(cfg):
+def run(profile, config):
     driver = webdriver.Chrome(executable_path=os.path.join(current_folder, "Chromedriver.exe"))
     try:
         # 打开疫情填报网站
         driver.get(daily_report_url)
         # 登录
-        login(driver, cfg)
+        login(driver, profile)
         # 每日填报
-        daily_report(driver, cfg)
+        daily_report(driver, profile)
         # 打开入校申请网站
-        time.sleep(5)
-        driver.get(enter_campus_apply_url)
-        # 填写入校申请
-        enter_campus_apply(driver, cfg)
+        if config["enable_enter_campus_apply"]:
+            time.sleep(5)
+            driver.get(enter_campus_apply_url)
+            # 填写入校申请
+            enter_campus_apply(driver, profile)
     except Exception:
         exception = traceback.format_exc()
-        server_chan_send(cfg['server_chan_key'], '出错啦,请尝试手动重新填报', exception)
+        server_chan_send(profile['server_chan_key'], '出错啦,请尝试手动重新填报', exception)
     finally:
         time.sleep(3)
         driver.quit()  # 退出整个浏览器
@@ -255,10 +256,12 @@ def run(cfg):
 
 if __name__ == '__main__':
     with open(os.path.join(current_folder, 'config.json'), encoding='UTF-8') as config_file:
-        users = json.load(config_file)['users']
+        j = json.load(config_file)
+        users = j['users']
+        cfg = j['config']
 
         for user in users:
             print(user['username'], '正在填报...')
-            run(user)
+            run(user, cfg)
             print(user['username'], '填报完成')
-            time.sleep(5)
+            time.sleep(1)

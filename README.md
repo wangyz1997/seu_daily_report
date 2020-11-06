@@ -62,6 +62,8 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
 |    往返无线谷实验室    |    6     |
 |          其他          |    7     |
 
+除此之外，在`config.json`中的`config`字段中，您也可以通过将`enable_enter_campus_apply`项设置为`true`来启动入校申请或`false`来关闭入校申请。
+
 ## 5. 运行脚本
 在您正式运行脚本之前，请确认您脚本目录下的文件和下面相同：
 
