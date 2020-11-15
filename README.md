@@ -30,8 +30,6 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
 ## 3. 使用 [server酱](http://sc.ftqq.com/) 接收脚本执行结果
 [server酱](http://sc.ftqq.com/) 是一个微信推送工具，可以将服务器端执行结果推送到您的微信上。
 
-![server chan](https://yuanze.wang/img/seu_daily_report/server_chan.jpg)
-
 本脚本支持 server酱 推送，您只需要按照其网站上的指引，使用`GitHub`账号登录并扫码绑定您的微信，即可获得`SCKEY`。
 将取得的`SCKEY`填入`config.json`中的`server_chan_key`字段中，即可启用微信推送功能。
 
