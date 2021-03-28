@@ -3,10 +3,11 @@
       {
          "username": "此处改为你的9位一卡通账号", "password": "此处改为你的一卡通密码",
          "server_chan_key": "此处改为你的server酱SCKEY, 留空即为不启用",
-         "temp_range": [36.0, 36.5]
+         "temp_range": [36.0, 36.5],
+         "email_addr": "此处填写接收邮箱地址"
       }
    ],
    "config": {
-
+      "browser": "此处填写浏览器类型，例如：firefox或chrome"
    }
 }
