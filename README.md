@@ -66,7 +66,7 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
 
 在您正式运行脚本之前，请确认您脚本目录下存在`main.py` `config.json`与`chromedriver.exe`或`geckodriver.exe`。
 
-之后，使用`python`运行`main.py`即可。
+然后，使用`python`运行`main.py`即可。
 
 ## 5. 进阶
 
@@ -80,13 +80,13 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
          "username": "xxxxxx", "password": "***",
          "temp_range": [35.5, 36.2],
          "server_chan_key": "",
-         "to_addr": ""
+         "email_addr": ""
       },
         {
          "username": "xxxxxx", "password": "***",
          "temp_range": [35.5, 36.2],
          "server_chan_key": "",
-         "to_addr": ""
+         "email_addr": ""
       },
    ]
 ```
