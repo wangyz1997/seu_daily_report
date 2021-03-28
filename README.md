@@ -56,11 +56,8 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
 | `password`                  | 一卡通密码                                           | YES      |
 | `temp_range`                | 体温范围 ***请一定要在确定自己体温正常的情况下使用此功能*** | YES      |
 | `server_chan_key`           | Server酱SCKEY（留空不启用）                           | NO       |
-| `from_addr`                 | 发送执行结果的邮箱地址（建议使用SEU邮箱，留空不启用）       | NO       |
-| `email_password`            | 发送邮箱密码                                          | NO       |
-| `smtp_server`               | 发送邮箱的SMTP服务器地址                               | NO       |
-| `to_adr`                    | 接收执行结果的邮箱地址                                  | NO       |
-| `browser`                   | 选择浏览器类型（chrome / firefox）                     | YES      |
+| `email_addr`                | 接收执行结果的邮箱地址                                 | NO       |
+| `browser`                   | 选择浏览器类型（chrome / firefox）                    | YES      |
 
 ## 4. 运行脚本
 
