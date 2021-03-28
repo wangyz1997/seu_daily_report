@@ -144,6 +144,7 @@ def run(profile, cfg):
         driver = webdriver.Chrome(executable_path=os.path.join(current_folder, "Chromedriver.exe"))
     elif cfg['browser'] == "firefox":
         driver = webdriver.Firefox(executable_path=os.path.join(current_folder, "geckodriver.exe"))
+
     try:
         # 打开疫情填报网站
         driver.get(daily_report_url)
@@ -164,10 +165,9 @@ if __name__ == '__main__':
     with open(os.path.join(current_folder, 'config.json'), encoding='UTF-8') as config_file:
         j = json.load(config_file)
         users = j['users']
-        cfg = j['config']
 
         for user in users:
             print(user['username'], '正在填报...')
-            run(user, cfg)
+            run(user)
             print(user['username'], '填报完成')
             time.sleep(1)
