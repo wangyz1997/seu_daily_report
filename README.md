@@ -6,32 +6,32 @@
 
 这是一个每日健康上报及入校申请自动化脚本，通过正确配置之后，可以实现每日自动健康上报和入校申请，并通过微信或邮件推送上报结果。
 
-## 一、依赖
-### 1. WebDriver
-**如果你想用 [Google Chrome](https://www.google.cn/chrome/) 作为本脚本使用的浏览器，那么**
+# 一、依赖
+## 1. WebDriver
+**如果你用的浏览器是[Google Chrome](https://www.google.cn/chrome/) ，那么**
 
-1. 请检查您安装的Chrome版本：浏览器右上角的3个点-帮助-关于Google Chrome。
+1. 请检查安装的Chrome版本：浏览器右上角的3个点-帮助-关于Google Chrome。
 
-2. 进入 [淘宝Chrome Driver镜像站](http://npm.taobao.org/mirrors/chromedriver/) 下载与您使用浏览器相同版本的Chrome Driver。
+2. 进入 [淘宝Chrome Driver镜像站](http://npm.taobao.org/mirrors/chromedriver/) 下载与浏览器相同版本的Chrome Driver。
 
-3. 下载后请与本脚本文件放置于同一目录中,Windows平台命名为`chromedriver.exe`。
+3. 下载后与本脚本文件放置于同一目录中,Windows平台命名为`chromedriver.exe`。
 
    Linux / macOS平台请将可执行文件放置于与脚本相同的目录中，并自行修改脚本中`executable_path`中的文件名。
 
-**如果你想用 [Mozilla Firefox](https://www.firefox.com ) 作为本脚本使用的浏览器，那么**
+**如果你用的浏览器是 [Mozilla Firefox](https://www.firefox.com ) ，那么**
 
-1. 请检查您安装的Firefox版本：浏览器右上角3条杠-帮助-关于Firefox。
+1. 请检查安装的Firefox版本：浏览器右上角3条杠-帮助-关于Firefox。
 
-2. 进入 [淘宝geckodriver镜像站 ](http://npm.taobao.org/mirrors/geckodriver/)下载与您使用浏览器相同版本的geckodriver。
+2. 进入 [淘宝geckodriver镜像站 ](http://npm.taobao.org/mirrors/geckodriver/)下载与浏览器相同版本的geckodriver。
 
-3. 下载后请与本脚本文件放置于同一目录中, Windows平台命名为`chromedriver.exe`。
+3. 下载后与本脚本文件放置于同一目录中, Windows平台命名为`chromedriver.exe`。
 
    Linux / macOS平台请将可执行文件放置于与脚本相同的目录中，并自行修改脚本中`executable_path`中的文件名。
 
 > 提示：本脚本目录中已经放置`chromedriver_90.0.4430.24`和`geckodriver_v0.29.0`，若运行有问题，请下载与浏览器相同版本的WebDriver进行替换。
 
-### 2. `Python`依赖
-本脚本依赖`selenium`包与`requests`包。要安装它们，只需要使用`pip`即可。
+## 2. `Python`依赖
+本脚本依赖`selenium`包与`requests`包，使用`pip`进行安装。
 
 ```shell script
 # Windows
@@ -41,10 +41,8 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
 ```
 
 
-## 二、使用方法
-### 1. 配置脚本
-
-> 提示：与`1.0`版本中不同，`2.0`中为了实现多用户功能，改用了`json`格式的配置文件，如果您进行了版本升级，请重新进行配置。
+# 二、使用方法
+## 1. 配置脚本
 
 1. 将脚本目录中的`config_sample.json`重命名为`config.json`。
 
@@ -61,10 +59,10 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
    | `email_password`            | 发送邮箱密码                              | NO       |
    | `smtp_server`               | 发送邮箱的SMTP服务器地址                  | NO       |
    | `to_adr`                    | 接收执行结果的邮箱地址                    | NO       |
-| `enable_enter_campus_apply` | 开启/关闭入校申请功能（默认关闭）         | YES      |
+   | `enable_enter_campus_apply` | 开启/关闭入校申请功能（默认关闭）         | YES      |
    | `browser`                   | 选择浏览器类型（chrome / firefox）        | YES      |
 
-   向其中的`username`与`password`后填入您的一卡通账号与密码。
+   向其中的`username`与`password`填入您的一卡通账号与密码。
 
    在`temp_range`中可自定义您想要填写的体温范围。 ***请一定要在确定自己体温正常的情况下使用此功能。***
    
@@ -81,13 +79,15 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
 |    往返无线谷实验室    |    6     |
 |          其他          |    7     |
    
-   `server_chan_key`用于配置Server酱推送功能，`from_addr`、`email_password`、`smtp_server`、`to_addr`用于配置邮件推送功能。
+   `server_chan_key`用于配置Server酱推送功能。
+   
+   `from_addr`、`email_password`、`smtp_server`、`to_addr`用于配置邮件推送功能。
    
    除此之外，通过将`enable_enter_campus_apply`设置为`true`来启动入校申请或`false`来关闭入校申请。
    
    `browser`用于设置使用的浏览器，可填写`chrome`或`firefox`
 
-#### 配置实现多个用户上报
+### 配置实现多个用户上报
 
 若想要同时为多个用户进行健康上报或入校申请，只需要将`config.json`中`users`字段的配置信息复制多份，每一份均填写一位用户的信息即可。
 
@@ -120,7 +120,7 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
    ]
 ```
 
-#### 使用 [Server酱](http://sc.ftqq.com/) 推送上报结果
+### 使用 Server酱 推送上报结果
 
 [Server酱](http://sc.ftqq.com/) 是一个微信推送工具，可以将服务器端执行结果推送到您的微信上。
 
@@ -129,7 +129,7 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
 
 > 提示：将`server_chan_key`留空，即可禁用微信推送功能。
 
-#### 使用 邮件 推送上报结果
+### 使用 邮件 推送上报结果
 
 本脚本支持邮件推送，您只需要在`config.json`文件中填写`from_addr`、`email_password`、`smtp_server`、`to_addr`字段。即可启用邮件推送功能。
 
@@ -144,7 +144,7 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
 
 > 提示：将`from_addr`、`email_password`、`smtp_server`、`to_addr`留空，即可禁用邮件推送功能。
 
-### 2. 运行脚本
+## 2. 运行脚本
 在正式运行脚本之前，请确认脚本目录下的文件和下面相同：
 
 ```
