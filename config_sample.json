@@ -2,18 +2,12 @@
    "users": [
       {
          "username": "此处改为你的9位一卡通账号", "password": "此处改为你的一卡通密码",
-         "temp_range": [35.5, 36.2],
-         "places": ["此处填写你周一想要申请的去处", "周二去处", "以此类推...", "中山院104", "中山院105", "中山院106", "周日去处"],
-         "reasons": [0, 0, 0, 0, 0, 0, 0],
          "server_chan_key": "此处改为你的server酱SCKEY, 留空即为不启用",
-         "from_addr": "此处填写发送打卡结果的邮箱地址，例如：name@seu.edu.cn，name一般为9位学号,留空即为不启用",
-         "email_password": "此处填写邮箱密码******",
-         "smtp_server": "此处填写SMTP服务器地址（与发送邮箱地址要是同一个域名），例如：smtp@seu.edu.cn",
-         "to_addr": "此处填写接收打卡结果的邮箱地址，例如：name@example.com"
+         "temp_range": [36.0, 36.5],
+         "email_addr": "此处填写接收邮箱地址"
       }
    ],
    "config": {
-      "enable_enter_campus_apply": false,
       "browser": "此处填写浏览器类型，例如：firefox或chrome"
    }
 }

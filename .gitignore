@@ -1,5 +1,6 @@
+chromedriver*
+geckodriver*
 config.json
-geckodriver.log
 
 __pycache__
 .idea
