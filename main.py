@@ -11,11 +11,11 @@ from email.mime.text import MIMEText
 from email.header import Header
 from email.utils import parseaddr, formataddr
 
-
 current_folder = os.path.split(os.path.realpath(__file__))[0]  # 当前py文件路径
 # 疫情每日打卡URL
 daily_report_url = 'http://ehall.seu.edu.cn/qljfwapp2/sys/lwReportEpidemicSeu/*default/index.do#/dailyReport'
 server_chan_url = 'http://sc.ftqq.com/{}.send/'
+
 
 def email_send(username, password, remote_email_addr, message):
     """
@@ -25,12 +25,12 @@ def email_send(username, password, remote_email_addr, message):
         username: 一卡通账号
         password: 一卡通密码
         remote_email_addr: 指定邮箱地址
-        msg: 上报结果.
+        message: 上报结果
     """
-    if len(remote_email_addr) <=0 :
+    if len(remote_email_addr) <= 0:
         return None
 
-    seu_email_addr = str(username) +"@seu.edu.cn"
+    seu_email_addr = str(username) + "@seu.edu.cn"
 
     msg = MIMEText(message, 'plain', 'utf-8')
     msg['From'] = format_addr("SEU Daily Reporter {}".format(seu_email_addr))
@@ -139,23 +139,26 @@ def daily_report(drv, cfg):
     email_send(cfg['username'], cfg['password'], cfg['email_addr'], '每日疫情上报成功!')
 
 
-def run(profile, cfg):
-    if cfg['browser'] == "chrome":
+def run(user, config):
+    if config['browser'] == "chrome":
         driver = webdriver.Chrome(executable_path=os.path.join(current_folder, "Chromedriver.exe"))
-    elif cfg['browser'] == "firefox":
+    elif config['browser'] == "firefox":
         driver = webdriver.Firefox(executable_path=os.path.join(current_folder, "geckodriver.exe"))
+    else:
+        print('Please specify the browser you use in config.json!')
+        return
 
     try:
         # 打开疫情填报网站
         driver.get(daily_report_url)
         # 登录
-        login(driver, profile)
+        login(driver, user)
         # 每日打卡
-        daily_report(driver, profile)
+        daily_report(driver, user)
     except Exception:
         exception = traceback.format_exc()
-        server_chan_send(profile['server_chan_key'], '出错啦,请尝试手动重新填报', exception)
-        email_send(cfg['username'], cfg['password'], cfg['email_addr'], '出错啦,请尝试手动重新填报')
+        server_chan_send(user['server_chan_key'], '出错啦,请尝试手动重新填报', exception)
+        email_send(config['username'], config['password'], config['email_addr'], '出错啦,请尝试手动重新填报')
     finally:
         time.sleep(1)
         driver.quit()  # 退出整个浏览器
@@ -165,9 +168,10 @@ if __name__ == '__main__':
     with open(os.path.join(current_folder, 'config.json'), encoding='UTF-8') as config_file:
         j = json.load(config_file)
         users = j['users']
+        cfg = j['config']
 
-        for user in users:
-            print(user['username'], '正在填报...')
-            run(user)
-            print(user['username'], '填报完成')
+        for u in users:
+            print(u['username'], '正在填报...')
+            run(u, cfg)
+            print(u['username'], '填报完成')
             time.sleep(1)
