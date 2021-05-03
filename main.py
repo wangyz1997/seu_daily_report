@@ -261,7 +261,7 @@ def run(user, config):
         # 登录
         login(driver, user)
         # 每日打卡
-        daily_report()
+        daily_report(driver, user)
     except Exception:
         exception = traceback.format_exc()
         message(user, '填报'+user['username']+'过程中出错,请尝试手动重新填报', exception)

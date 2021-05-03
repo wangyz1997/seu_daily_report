@@ -1,5 +1,4 @@
-chromedriver*
-geckodriver*
+*driver*
 config.json
 
 __pycache__
