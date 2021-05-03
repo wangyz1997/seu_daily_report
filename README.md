@@ -26,7 +26,7 @@
 
 3. 下载后与本脚本文件放置于同一目录中, Windows平台命名为`geckodriver.exe`。
 
-> Linux / macOS平台请将可执行文件放置于与脚本相同的目录中，并自行修改脚本中`executable_path`中的文件名。
+> 无需更改`WebDriver`的文件名，程序会自动识别各个平台对应的文件名。
 
 ## 2. 安装`python`依赖
 
@@ -56,7 +56,7 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
 | `password`                  | 一卡通密码                                           | YES      |
 | `temp_range`                | 体温范围 ***请一定要在确定自己体温正常的情况下使用此功能*** | YES      |
 | `server_chan_key`           | Server酱SCKEY（留空不启用）                           | NO       |
-| `email_addr`                | 接收执行结果的邮箱地址                                 | NO       |
+| `email_addr`                | 接收执行结果的邮箱地址（留空不启用）                     | NO       |
 | `browser`                   | 选择浏览器类型（chrome / firefox）                    | YES      |
 
 ## 4. 运行脚本
@@ -64,6 +64,9 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
 在您正式运行脚本之前，请确认您脚本目录下存在`main.py` `config.json`与`chromedriver.exe`或`geckodriver.exe`。
 
 然后，使用`python`运行`main.py`即可。
+
+本脚本现已支在docker环境中运行。如果您有一台未安装图形界面的服务器，可以使用docker安装
+[带有桌面的镜像](https://hub.docker.com/r/dorowu/ubuntu-desktop-lxde-vnc/) ，并在镜像中运行本脚本。
 
 ## 5. 进阶
 
