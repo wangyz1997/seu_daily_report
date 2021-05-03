@@ -68,6 +68,8 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
 本脚本现已支在docker环境中运行。如果您有一台未安装图形界面的服务器，可以使用docker安装
 [带有桌面的镜像](https://hub.docker.com/r/dorowu/ubuntu-desktop-lxde-vnc/) ，并在镜像中运行本脚本。
 
+在V3.1版本中，加入了`timer.py`文件。对于docker内不方便运行`cron`的情景，只需要运行该脚本文件，即可在每天7-8时随机时间自动运行填报脚本。
+
 ## 5. 进阶
 
 您也可以将脚本与运行环境部署到云服务器上，并设置定时计划任务，实现每日自动签到。

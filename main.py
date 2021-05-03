@@ -181,11 +181,11 @@ def daily_report(drv, user):
     time.sleep(1)
     add_btn = drv.find_element_by_xpath('//*[@id="app"]/div/div[1]/button[1]')  # 找到新增按钮
     if add_btn.text == '退出':  # 没有找到新增按钮
-        message(user, 'User ' + user['username'] + ' has already reported today.', '')
+        message(user, '用户' + user['username'] + '今日已进行过每日上报！', '')
         return
     else:
         add_btn.click()  # 点击新增填报按钮
-        time.sleep(10)  # 等待界面动画
+        time.sleep(5)  # 等待界面动画
 
     # 输入体温
     temp_input = find_element_by_class_placeholder_keyword(drv, 'mint-field-core', '请输入当天晨检体温')
@@ -201,7 +201,7 @@ def daily_report(drv, user):
     time.sleep(1)
     find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
 
-    message(user, str(user['username']) + 'Daily report for ' + user['username'] + ' success!', '')
+    message(user, '用户' + user['username'] + '每日上报成功', '')
 
 
 def get_driver(cfg):
@@ -264,13 +264,13 @@ def run(user, config):
         daily_report(driver, user)
     except Exception:
         exception = traceback.format_exc()
-        message(user, '填报'+user['username']+'过程中出错,请尝试手动重新填报', exception)
+        message(user, '用户'+user['username']+'每日上报过程中出错，请尝试手动重新填报', exception)
     finally:
         time.sleep(1)
         driver.quit()  # 退出整个浏览器
 
 
-def exec():
+def run_all():
     """
     主函数，针对配置文件中的每个用户进行填报
     """
@@ -280,11 +280,10 @@ def exec():
         config = j['config']
 
         for user in users:
-            print('正在填报', user['username'], '...')
+            print('\033[35m用户' + user['username'] + '正在每日上报...\033[0m')
             run(user, config)
-            print(user['username'], '每日健康上报完毕')
             time.sleep(1)
 
 
 if __name__ == '__main__':
-    exec()
+    run_all()
