@@ -61,21 +61,11 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
 
 ## 4. 运行脚本
 
-在您正式运行脚本之前，请确认您脚本目录下存在`main.py` `config.json`与`chromedriver.exe`或`geckodriver.exe`。
+在您正式运行脚本之前，请确认您脚本目录下存在`main.py` `config.json`与`chromedriver.exe`或`geckodriver.exe`文件。
 
-然后，使用`python`运行`main.py`即可。
-
-本脚本现已支在docker环境中运行。如果您有一台未安装图形界面的服务器，可以使用docker安装
-[带有桌面的镜像](https://hub.docker.com/r/dorowu/ubuntu-desktop-lxde-vnc/) ，并在镜像中运行本脚本。
-
-在V3.1版本中，加入了`timer.py`文件。对于docker内不方便运行`cron`的情景，只需要运行该脚本文件，即可在每天7-8时随机时间自动运行填报脚本。
-
-## 5. 进阶
-
-您也可以将脚本与运行环境部署到云服务器上，并设置定时计划任务，实现每日自动签到。
+然后，使用`python`/`python3`运行`main.py`即可启动单次填报，或运行`timer.py`以在每天7-8时随机时间自动运行填报脚本。
 
 若想要同时为多个用户执行本脚本，只需要将`config.json`中`users`字段的配置信息复制多份，每一份均填写一位用户的信息即可。例如：
-
 ```
 "users": [
       {
@@ -92,3 +82,31 @@ pip3 install requests selenium -i https://pypi.douban.com/simple --user
       },
    ]
 ```
+
+## 5. 进阶
+
+本脚本现已支在docker环境中运行。此处简单介绍如何在未安装图形界面的服务器上，使用docker安装支持桌面环境的镜像，并实现每日自动签到。
+
+首先，使用docker拉下 [dorowu/ubuntu-desktop-lxde-vnc](https://hub.docker.com/r/dorowu/ubuntu-desktop-lxde-vnc/) 镜像。
+
+```shell
+docker pull dorowu/ubuntu-desktop-lxde-vnc:focal-lxqt 
+```
+
+然后，启动该容器并允许在`5900`端口上的VNC远程登录。其中，`VNC_PASSWORD`字段是VNC远程登录的密码，可以根据需要自行设置。
+
+```shell
+docker run -itd --name ubuntu-daily-report -p 5900:5900 \
+    -e RESOLUTION=1600x900 -e VNC_PASSWORD=123456 \
+    dorowu/ubuntu-desktop-lxde-vnc:focal-lxqt 
+```
+
+容器成功启动后，使用VNC远程连接容器内的操作系统，在操作系统内使用git拉下本仓库代码，并配置`config.json`。
+
+最后，使用图形桌面的终端运行`timer.py`脚本即可。
+
+```shell
+python3 timer.py
+```
+
+![](img/docker-with-desktop.jpg)
