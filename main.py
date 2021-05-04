@@ -193,12 +193,12 @@ def daily_report(drv, user):
     temp_input.click()  # 点击输入框
     temp = random.randint(int(user['temp_range'][0] * 10), int(user['temp_range'][1] * 10))  # 产生随机体温
     temp_input.send_keys(str(temp / 10))  # 输入体温
-    time.sleep(1)
+    time.sleep(2)
 
     # 点击提交按钮并确认
     find_element_by_class_keyword(drv, 'mint-button--large', '确认并提交').click()  # 点击提交按钮
     wait_element_by_class_name(drv, 'mint-msgbox-confirm', 5)  # 等待弹出动画
-    time.sleep(1)
+    time.sleep(2)
     find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
 
     message(user, '用户' + user['username'] + '每日上报成功', '')
@@ -212,7 +212,7 @@ def get_driver(cfg):
         cfg: 配置信息
 
     Returns:
-        drv: webdriver对象
+        drv: webdriver对象，若失败返回None
     """
     # 判断平台
     driver_option = webdriver.ChromeOptions()
@@ -234,7 +234,7 @@ def get_driver(cfg):
     elif cfg['browser'] == "firefox":
         for file in file_list:
             if file.lower().find('geckodriver'):
-                return webdriver.Chrome(executable_path=os.path.join(current_folder, file))
+                return webdriver.Firefox(executable_path=os.path.join(current_folder, file))
     else:
         print('\033[31m请在config.json中指定正确的浏览器类型\033[0m')
         return None
@@ -266,7 +266,7 @@ def run(user, config):
         exception = traceback.format_exc()
         message(user, '用户'+user['username']+'每日上报过程中出错，请尝试手动重新填报', exception)
     finally:
-        time.sleep(1)
+        time.sleep(3)
         driver.quit()  # 退出整个浏览器
 
 
@@ -282,7 +282,7 @@ def run_all():
         for user in users:
             print('\033[35m用户' + user['username'] + '正在每日上报...\033[0m')
             run(user, config)
-            time.sleep(1)
+            time.sleep(3)
 
 
 if __name__ == '__main__':
