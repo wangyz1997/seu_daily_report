@@ -363,6 +363,8 @@ def enter_campus_apply(drv, user):
     select_default_item_by_keyword(drv, '是否已在南京居家隔离')
     select_default_item_by_keyword(drv, '目前身体是否健康')
 
+    # 由于上传通信行程码的功能使用了微信内置浏览器API，普通浏览器暂时无法模拟，若您能够解决此问题，欢迎提出PR
+
     select_default_item_in_areas(drv, '通行区域')  # 填写通行区域
 
     time_date_reason_pick(drv, user)  # 填入入校时间/出校时间/入校理由
@@ -440,7 +442,8 @@ def run(user, config):
         # 打开入校申请页面
         driver.get(enter_campus_apply_url)
         # 入校申请
-        enter_campus_apply(driver, user)
+        if config['enter_campus_apply']:
+            enter_campus_apply(driver, user)
     except Exception:
         exception = traceback.format_exc()
         message(user, '用户'+user['username']+'每日上报过程中出错，请尝试手动重新填报', exception)
