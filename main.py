@@ -189,20 +189,21 @@ def daily_report(drv, user):
         return
     else:
         add_btn.click()  # 点击新增填报按钮
-        time.sleep(5)  # 等待界面动画
+        wait_element_by_class_name(drv, "emapm-form", 30)  # 等待界面动画
 
     # 输入体温
     temp_input = find_element_by_class_placeholder_keyword(drv, 'mint-field-core', '请输入当天晨检体温')
     drv.execute_script("arguments[0].scrollIntoView();", temp_input)  # 滚动页面直元素可见
     temp_input.click()  # 点击输入框
+    time.sleep(0.5)
     temp = random.randint(int(user['temp_range'][0] * 10), int(user['temp_range'][1] * 10))  # 产生随机体温
     temp_input.send_keys(str(temp / 10))  # 输入体温
-    time.sleep(2)
+    time.sleep(0.5)
 
     # 点击提交按钮并确认
     find_element_by_class_keyword(drv, 'mint-button--large', '确认并提交').click()  # 点击提交按钮
     wait_element_by_class_name(drv, 'mint-msgbox-confirm', 5)  # 等待弹出动画
-    time.sleep(2)
+    time.sleep(1)
     find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定').click()  # 点击确认按钮
 
     message(user, '用户' + user['username'] + '每日上报成功', '')
