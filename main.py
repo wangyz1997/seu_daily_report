@@ -439,10 +439,10 @@ def run(user, config):
         login(driver, user)
         # 每日打卡
         daily_report(driver, user)
-        # 打开入校申请页面
-        driver.get(enter_campus_apply_url)
-        # 入校申请
         if config['enter_campus_apply']:
+            # 打开入校申请页面
+            driver.get(enter_campus_apply_url)
+            # 入校申请
             enter_campus_apply(driver, user)
     except Exception:
         exception = traceback.format_exc()
