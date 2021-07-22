@@ -18,8 +18,8 @@ date_of_today = datetime.datetime.now()  # 当日日期
 date_of_tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)  # 次日日期
 current_folder = os.path.split(os.path.realpath(__file__))[0]  # 当前py文件路径
 # 疫情每日上报和入校申请URL
-daily_report_url = 'https://ehall.seu.edu.cn/qljfwapp2/sys/lwReportEpidemicSeu/*default/index.do#/dailyReport'
-enter_campus_apply_url = 'https://ehall.seu.edu.cn/qljfwapp3/sys/lwWiseduElectronicPass/*default/index.do'
+daily_report_url = 'http://ehall.seu.edu.cn/qljfwapp2/sys/lwReportEpidemicSeu/*default/index.do#/dailyReport'
+enter_campus_apply_url = 'http://ehall.seu.edu.cn/qljfwapp3/sys/lwWiseduElectronicPass/*default/index.do#/'
 server_chan_url = 'https://sc.ftqq.com/{}.send/'
 
 
