@@ -189,7 +189,13 @@ def daily_report(drv, user):
         return
     else:
         add_btn.click()  # 点击新增填报按钮
-        wait_element_by_class_name(drv, "emapm-form", 30)  # 等待界面动画
+        time.sleep(1)
+        popup = find_element_by_class_keyword(drv, 'mint-msgbox-confirm', '确定')  # 查询是否弹出了对话框
+        if popup is not None:  # 如果弹出了对话框
+            message(user, '用户' + user['username'] + '当前不在每日健康上报时间!', '')
+            return
+
+    wait_element_by_class_name(drv, "emapm-form", 30)  # 等待界面动画
 
     # 输入体温
     temp_input = find_element_by_class_placeholder_keyword(drv, 'mint-field-core', '请输入当天晨检体温')
