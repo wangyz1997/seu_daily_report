@@ -110,7 +110,7 @@ def wait_element_by_class_name(drv, class_name, timeout):
         class_name: 要等待的class名
         timeout: 超时时间，超时后会由WebDriver抛出异常
     """
-    WebDriverWait(drv, timeout).until(lambda d: d.find_element_by_class_name(class_name))
+    WebDriverWait(drv, timeout).until(lambda d: d.find_element('class name', class_name))
 
 
 def find_element_by_class_placeholder_keyword(drv, class_name, keyword):
@@ -125,7 +125,7 @@ def find_element_by_class_placeholder_keyword(drv, class_name, keyword):
     Returns:
         WebElement, 要寻找的对象
     """
-    elements = drv.find_elements_by_class_name(class_name)
+    elements = drv.find_elements('class name', class_name)
     for element in elements:
         if element.get_attribute('placeholder').find(keyword) >= 0:  # 查找占位符
             return element
@@ -145,7 +145,7 @@ def find_element_by_class_keyword(drv, class_name, keyword):
     Returns:
         WebElement, 要寻找的对象
     """
-    elements = drv.find_elements_by_class_name(class_name)
+    elements = drv.find_elements('class name', class_name)
     for element in elements:
         if element.text.find(keyword) >= 0:  # 查找文本
             return element
@@ -161,8 +161,8 @@ def login(drv, user):
         drv: webdriver对象
         user: 用户信息
     """
-    username_input = drv.find_element_by_id('username')  # 账户输入框
-    password_input = drv.find_element_by_id('password')  # 密码输入框
+    username_input = drv.find_element('id', 'username')  # 账户输入框
+    password_input = drv.find_element('id', 'password')  # 密码输入框
     login_button = find_element_by_class_keyword(drv, 'auth_login_btn', '登录')  # 登录按钮
     if login_button is None:
         login_button = find_element_by_class_keyword(drv, 'auth_login_btn', 'Sign in')  # 登录按钮
@@ -183,7 +183,7 @@ def daily_report(drv, user):
     # 新增填报
     wait_element_by_class_name(drv, 'mint-loadmore-top', 30)  # 等待界面加载 超时30s
     time.sleep(1)
-    add_btn = drv.find_element_by_xpath('//*[@id="app"]/div/div[1]/button[1]')  # 找到新增按钮
+    add_btn = drv.find_element('xpath', '//*[@id="app"]/div/div[1]/button[1]')  # 找到新增按钮
     if add_btn.text == '退出':  # 没有找到新增按钮
         message(user, '用户' + user['username'] + '今日已进行过每日上报！', '')
         return
@@ -223,7 +223,7 @@ def select_default_item_by_keyword(drv, keyword):
         drv: webdriver对象
         keyword: 关键词
     """
-    items = drv.find_elements_by_class_name('emapm-item')  # 找到所有项目
+    items = drv.find_elements('class name', 'emapm-item')  # 找到所有项目
     for item in items:
         if item.text.find(keyword) >= 0:  # 找到项目标题
             drv.execute_script("arguments[0].scrollIntoView();", item)  # 滚动页面直到元素可见
@@ -243,7 +243,7 @@ def select_default_item_in_areas(drv, keyword):
         drv: webdriver对象
         keyword: 通行区域关键词
     """
-    items = drv.find_elements_by_class_name('emapm-item')  # 找到所有项目
+    items = drv.find_elements('class name', 'emapm-item')  # 找到所有项目
     for item in items:
         if item.text.find(keyword) >= 0:  # 找到项目标题
             drv.execute_script("arguments[0].scrollIntoView();", item)  # 滚动页面直元素可见
@@ -251,7 +251,7 @@ def select_default_item_in_areas(drv, keyword):
 
     wait_element_by_class_name(drv, 'mint-checkbox-new-row', 5)  # 等待弹出动画
     time.sleep(1)
-    drv.find_element_by_class_name('mint-checkbox-new-row').click()  # 点击复选框
+    drv.find_element('class name', 'mint-checkbox-new-row').click()  # 点击复选框
     time.sleep(1)
     find_element_by_class_keyword(drv, 'mint-selected-footer-confirm', '确定').click()  # 点击确定按钮
     time.sleep(1)
@@ -266,7 +266,7 @@ def picker_click(drv, column, cnt):
         column: 滚轮的栏目
         cnt: 要选择的位置
     """
-    pickers = column.find_elements_by_class_name('mt-picker-column-item')  # 所有滚动元素
+    pickers = column.find_elements('class name', 'mt-picker-column-item')  # 所有滚动元素
     drv.execute_script("arguments[0].scrollIntoView();", pickers[cnt])  # 滚动页面直元素可见
     pickers[cnt].click()  # 选中元素
 
@@ -279,12 +279,12 @@ def time_date_reason_pick(drv, user):
         drv: webdriver对象
         user: 用户信息
     """
-    items = drv.find_elements_by_class_name('emapm-item')  # 找到所有项目
+    items = drv.find_elements('class name', 'emapm-item')  # 找到所有项目
     for item in items:
         if item.text.find('通行开始时间') >= 0:  # 找到项目标题
             drv.execute_script("arguments[0].scrollIntoView();", item)  # 滚动页面直元素可见
             item.click()  # 点击项目
-            columns = item.find_elements_by_class_name('mint-picker-column')  # 找到项目内所有滚轮
+            columns = item.find_elements('class name', 'mint-picker-column')  # 找到项目内所有滚轮
             time.sleep(1)
             picker_click(drv, columns[0], date_of_tomorrow.date().year - 1920)  # 年 从1920年开始
             picker_click(drv, columns[1], date_of_tomorrow.date().month - 1)  # 月 从1开始
@@ -298,7 +298,7 @@ def time_date_reason_pick(drv, user):
         if item.text.find('通行结束时间') >= 0:  # 找到项目标题
             drv.execute_script("arguments[0].scrollIntoView();", item)  # 滚动页面直元素可见
             item.click()  # 点击项目
-            columns = item.find_elements_by_class_name('mint-picker-column')  # 找到项目内所有滚轮
+            columns = item.find_elements('class name', 'mint-picker-column')  # 找到项目内所有滚轮
             time.sleep(1)
             picker_click(drv, columns[0], date_of_tomorrow.date().year - 1920)  # 年 从1920年开始
             picker_click(drv, columns[1], date_of_tomorrow.date().month - 1)  # 月 从1开始
@@ -327,7 +327,7 @@ def check_today_report(drv):
     Args:
         drv: webdriver对象
     """
-    items = drv.find_elements_by_class_name('res-list')  # 找到所有已填报项目
+    items = drv.find_elements('class name', 'res-list')  # 找到所有已填报项目
     if len(items) == 0:
         return False  # 第一次填报视为未填报
     latest = find_element_by_class_keyword(items[0], 'res-item-ele', '申请时间').text  # 第一个项目即为最近一次的填报
